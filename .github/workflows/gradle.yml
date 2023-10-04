@@ -1,26 +1,31 @@
-name: Java CI with Gradle
+name: Build and deploy JAR app to Azure Web App - office-tracking-be
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-    
+    branches:
+      - main
+  workflow_dispatch:
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    steps:
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: 17
-      
-    - name: Build with Gradle
-      run: ./gradlew clean build
 
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: artifact-demo-app
-        path: '${{ github.workspace }}/build/libs/demo-0.0.1-SNAPSHOT-plain.jar'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Java version
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: java-app
+          path: '${{ github.workspace }}/build/libs/demo-0.0.1-SNAPSHOT-plain.jar'
